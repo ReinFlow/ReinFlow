@@ -75,9 +75,7 @@ For OpenAI Gym, you’ve got two dataset options: D4RL’s version (our top pick
 ---
 
 ## 2. Downloading Pre-trained Checkpoints
-
-- Stay tuned—details coming soon!
-
+Simply run the fine-tuning scripts and the checkpoints will be automatically downloaded. 
 ---
 
 ## 3. Running the Experiments
