@@ -1,0 +1,48 @@
+{
+    "name": "Pretrain_Data_Scale_v.s._Reward",
+    "model": {
+        "name": "ShortCut",
+        "pretrain_step": "none"
+    },
+    "plot": {
+        "denoising_steps": [
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+            64,
+            128
+        ],
+        "labels": [
+            "8",
+            "16",
+            "32",
+            "64",
+            "100"
+        ],
+        "colors": [
+            "#E6D1FF",
+            "#C7A4FF",
+            "#A375FF",
+            "#7A41CC",
+            "#4C0080"
+        ],
+        "add_denoise_step_line": false,
+        "save_file_name": "square_datascale_pretrain.png",
+        "plot_scale": "semilogx"
+    },
+    "env": {
+        "name": "square",
+        "square": {
+            "eval_paths": [
+                "visualize/0_Models/ShortCutFlow/square/25-04-27-13-36-01/eval_statistics.npz",
+                "visualize/0_Models/ShortCutFlow/square/25-04-27-13-36-00/eval_statistics.npz",
+                "visualize/0_Models/ShortCutFlow/square/25-04-27-13-36-02/eval_statistics.npz",
+                "visualize/0_Models/ShortCutFlow/square/25-04-27-13-35-59/eval_statistics.npz",
+                "visualize/0_Models/ShortCutFlow/square/25-04-26-23-59-51/eval_statistics.npz"
+            ]
+        }
+    }
+}

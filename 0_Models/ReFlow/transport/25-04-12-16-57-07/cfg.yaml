@@ -1,0 +1,115 @@
+_target_: agent.eval.eval_reflow_img_agent.EvalImgReFlowAgent
+name: transport_eval_reflow_mlp_img_ta8_td100
+logdir: ${oc.env:REINFLOW_LOG_DIR}/robomimic/eval/transport_eval_reflow_mlp_img_ta8_td100/2025-04-12_16-56-57_42
+base_policy_path: log/robomimic/pretrain/transport/ReFlow/state_2000.pt
+robomimic_env_cfg_path: cfg/robomimic/env_meta/transport-img.json
+normalization_path: ${oc.env:REINFLOW_DATA_DIR}/robomimic/transport-img/normalization.npz
+seed: 42
+device: cuda:3
+env_name: transport
+obs_dim: 18
+cond_steps: 1
+img_cond_steps: 1
+action_dim: 14
+act_steps: 8
+horizon_steps: 8
+denoising_steps: 100
+ft_denoising_steps: 0
+n_steps: 400
+render_num: 0
+batch_size: 256
+env:
+  n_envs: 1
+  name: transport
+  best_reward_threshold_for_success: 1
+  max_episode_steps: 800
+  save_video: false
+  use_image_obs: true
+  wrappers:
+    robomimic_image:
+      normalization_path: ${oc.env:REINFLOW_DATA_DIR}/robomimic/transport-img/normalization.npz
+      low_dim_keys:
+      - robot0_eef_pos
+      - robot0_eef_quat
+      - robot0_gripper_qpos
+      - robot1_eef_pos
+      - robot1_eef_quat
+      - robot1_gripper_qpos
+      image_keys:
+      - shouldercamera0_image
+      - shouldercamera1_image
+      shape_meta:
+        obs:
+          rgb:
+            shape:
+            - 6
+            - 96
+            - 96
+          state:
+            shape:
+            - 18
+        action:
+          shape:
+          - 14
+    multi_step:
+      n_obs_steps: 1
+      n_action_steps: 8
+      max_episode_steps: 800
+      reset_within_step: true
+  render: true
+shape_meta:
+  obs:
+    rgb:
+      shape:
+      - 6
+      - 96
+      - 96
+    state:
+      shape:
+      - 18
+  action:
+    shape:
+    - 14
+model:
+  _target_: model.flow.reflow.ReFlow
+  network:
+    _target_: model.flow.mlp_flow.VisionFlowMLP
+    backbone:
+      _target_: model.common.vit.VitEncoder
+      obs_shape:
+      - 6
+      - 96
+      - 96
+      num_channel: 3
+      img_h: 96
+      img_w: 96
+      cfg:
+        patch_size: 8
+        depth: 1
+        embed_dim: 128
+        num_heads: 4
+        embed_style: embed2
+        embed_norm: 0
+    img_cond_steps: 1
+    augment: true
+    num_img: 2
+    spatial_emb: 128
+    time_dim: 32
+    mlp_dims:
+    - 768
+    - 768
+    - 768
+    residual_style: true
+    cond_dim: 18
+    horizon_steps: 8
+    action_dim: 14
+  device: cuda:3
+  horizon_steps: 8
+  action_dim: 14
+  act_min: -1
+  act_max: 1
+  obs_dim: 18
+  max_denoising_steps: 100
+  seed: 42
+  batch_size: 256
+  sample_t_type: uniform

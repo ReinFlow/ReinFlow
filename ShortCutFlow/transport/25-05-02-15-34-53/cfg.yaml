@@ -1,0 +1,124 @@
+env_name: transport
+action_dim: 14
+horizon_steps: 8
+act_steps: 8
+obs_dim: 18
+cond_steps: 1
+img_cond_steps: 1
+shape_meta:
+  obs:
+    rgb:
+      shape:
+      - 6
+      - 96
+      - 96
+    state:
+      shape:
+      - 18
+  action:
+    shape:
+    - 14
+_target_: agent.eval.eval_shortcut_img_agent.EvalImgShortCutAgent
+name: transport_eval_shortcut_mlp_img_ta8_td20
+logdir: log/robomimic/eval/transport_eval_shortcut_mlp_img_ta8_td20/2025-05-02_15-34-04_42
+base_policy_path: log/robomimic/pretrain/transport/transport_pre_shortcut_mlp_img_ta8_td20/2025-05-01_12-45-58_42/checkpoint/state_560.pt
+robomimic_env_cfg_path: cfg/robomimic/env_meta/transport-img.json
+normalization_path: data/robomimic/transport-img/normalization.npz
+seed: 42
+device: cuda:6
+denoising_steps: 20
+denoising_step_list:
+- 1
+- 2
+- 3
+- 4
+- 5
+n_steps: 200
+render_num: 0
+batch_size: 128
+env:
+  n_envs: 50
+  name: transport
+  best_reward_threshold_for_success: 1
+  max_episode_steps: 800
+  save_video: false
+  use_image_obs: true
+  wrappers:
+    robomimic_image:
+      normalization_path: data/robomimic/transport-img/normalization.npz
+      low_dim_keys:
+      - robot0_eef_pos
+      - robot0_eef_quat
+      - robot0_gripper_qpos
+      - robot1_eef_pos
+      - robot1_eef_quat
+      - robot1_gripper_qpos
+      image_keys:
+      - shouldercamera0_image
+      - shouldercamera1_image
+      shape_meta:
+        obs:
+          rgb:
+            shape:
+            - 6
+            - 96
+            - 96
+          state:
+            shape:
+            - 18
+        action:
+          shape:
+          - 14
+    multi_step:
+      n_obs_steps: 1
+      n_action_steps: 8
+      max_episode_steps: 800
+      reset_within_step: true
+  render: true
+model:
+  _target_: model.flow.shortcutflow.ShortCutFlow
+  network:
+    _target_: model.flow.mlp_shortcut.ShortCutFlowViT
+    backbone:
+      _target_: model.common.vit.VitEncoder
+      obs_shape:
+      - 6
+      - 96
+      - 96
+      num_channel: 3
+      cfg:
+        patch_size: 8
+        depth: 1
+        embed_dim: 128
+        num_heads: 4
+        embed_style: embed2
+        embed_norm: 0
+    action_dim: 14
+    horizon_steps: 8
+    prop_dim: 18
+    img_cond_steps: 1
+    td_emb_dim: 32
+    mlp_dims:
+    - 768
+    - 768
+    - 768
+    cond_mlp_dims:
+    - 96
+    - 48
+    - 32
+    residual_style: true
+    num_img: 2
+    augment: true
+    spatial_emb: 128
+    embed_combination_type: add
+  device: cuda:6
+  horizon_steps: 8
+  action_dim: 14
+  act_min: -1
+  act_max: 1
+  obs_dim: 18
+  max_denoising_steps: 20
+  seed: 42
+  self_consistency_k: 0.25
+  delta: 1.0e-05
+  sample_t_type: uniform

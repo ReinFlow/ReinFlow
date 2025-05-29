@@ -1,0 +1,93 @@
+{
+    "name": "Finetune_Data_Scale_v.s._Reward",
+    "model": {
+        "name": "1-ReFlow",
+        "pretrain_step": "none"
+    },
+    "plot": {
+        "labels": [
+            "8",
+            "16",
+            "32",
+            "64",
+            "128",
+            "256",
+            "512",
+            "1024",
+            "2048"
+        ],
+        "colors": [
+            "#E6CCFF",
+            "#D4A3FF",
+            "#C17AFF",
+            "#AD52FF",
+            "#9929FF",
+            "#8500FF",
+            "#6E00D6",
+            "#5700AD",
+            "#400080"
+        ],
+        "add_denoise_step_line": false,
+        "save_file_name": "hopper_datascale_finetune.png",
+        "plot_scale": "semilogx",
+        "denoising_steps": [
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+            64,
+            128,
+            256,
+            512
+        ]
+    },
+    "env": {
+        "name": "hopper-v2",
+        "hopper-v2": {
+            "eval_paths": {
+                "pretrained": [
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-26-17-03-22/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-26-17-03-24/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-26-17-11-06/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-36-20/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-37-27/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-37-38/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-37-49/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-37-58/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-41-32/eval_statistics.npz"
+                ],
+                "finetuned": [
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/8/seed0/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/8/seed42/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/8/seed3407/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/16/seed0/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/16/seed42/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/16/seed3407/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/32/seed0/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/32/seed42/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/32/seed3407/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/64/seed0/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/64/seed42/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/64/seed3407/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/128/seed0/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/128/seed42/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/128/seed3407/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/256/seed0/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/256/seed42/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/256/seed3407/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/512/seed0/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/512/seed42/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/512/seed3407/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/1024/seed0/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/1024/seed42/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/1024/seed3407/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/2048/seed0/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/2048/seed42/eval_statistics.npz",
+                    "visualize/0_Models/ReFlow/hopper-medium-v2/datascale-finetuned/2048/seed3407/eval_statistics.npz"
+                ]
+            }
+        }
+    }
+}

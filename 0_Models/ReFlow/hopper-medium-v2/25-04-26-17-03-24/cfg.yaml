@@ -1,0 +1,66 @@
+_target_: agent.eval.eval_reflow_agent.EvalReFlowAgent
+name: hopper-medium-v2_eval_reflow_mlp_ta4_td4
+logdir: log/gym/eval/hopper-medium-v2_eval_reflow_mlp_ta4_td4/2025-04-26_17-03-18_42
+base_policy_path: log/gym/pretrain/hopper-medium-v2_pre_reflow_mlp_ta4_td20/hopper-reflow-different-data-scale/16/checkpoint/state_100.pt
+normalization_path: data/gym/hopper-medium-v2/normalization.npz
+seed: 42
+device: cuda:7
+env_name: hopper-medium-v2
+obs_dim: 11
+action_dim: 3
+denoising_steps: 4
+denoising_step_list:
+- 1
+- 2
+- 4
+- 8
+- 16
+- 32
+- 64
+- 128
+- 256
+cond_steps: 1
+horizon_steps: 4
+act_steps: 4
+batch_size: 128
+n_steps: 500
+render_num: 0
+env:
+  n_envs: 40
+  name: hopper-medium-v2
+  max_episode_steps: 1000
+  reset_at_iteration: false
+  save_video: false
+  best_reward_threshold_for_success: 3
+  wrappers:
+    mujoco_locomotion_lowdim:
+      normalization_path: data/gym/hopper-medium-v2/normalization.npz
+    multi_step:
+      n_obs_steps: 1
+      n_action_steps: 4
+      max_episode_steps: 1000
+      reset_within_step: true
+model:
+  _target_: model.flow.reflow.ReFlow
+  network:
+    _target_: model.flow.mlp_flow.FlowMLP
+    horizon_steps: 4
+    action_dim: 3
+    cond_dim: 11
+    time_dim: 16
+    mlp_dims:
+    - 512
+    - 512
+    - 512
+    activation_type: ReLU
+    out_activation_type: Identity
+    use_layernorm: false
+    residual_style: true
+  device: cuda:7
+  horizon_steps: 4
+  action_dim: 3
+  act_min: -1
+  act_max: 1
+  obs_dim: 11
+  max_denoising_steps: 4
+  seed: 42

@@ -1,0 +1,41 @@
+{
+    "model": {
+        "name": "Pretrain Data Quantity v.s. Reward",
+        "pretrain_step": "none",
+        "compare_name": "1-ReFlow"
+    },
+    "plot": {
+        "labels": [
+            "64",
+            "128",
+            "256",
+            "512",
+            "1024",
+            "2048"
+        ],
+        "colors": [
+            "#D8BFD8",
+            "#C71585",
+            "#A500A5",
+            "#800080",
+            "#6A006A",
+            "#4B0082"
+        ],
+        "add_denoise_step_line": false,
+        "save_file_name": "hopper_datascale_pretrain.png",
+        "plot_scale": "semilogx"
+    },
+    "env": {
+        "name": "hopper-v2",
+        "hopper-v2": {
+            "eval_paths": [
+                "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-36-20/eval_statistics.npz",
+                "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-37-27/eval_statistics.npz",
+                "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-37-38/eval_statistics.npz",
+                "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-37-49/eval_statistics.npz",
+                "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-37-58/eval_statistics.npz",
+                "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-25-19-41-32/eval_statistics.npz"
+            ]
+        }
+    }
+}

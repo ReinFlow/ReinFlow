@@ -1,0 +1,121 @@
+env_name: square
+action_dim: 7
+horizon_steps: 4
+act_steps: 4
+obs_dim: 9
+cond_steps: 1
+img_cond_steps: 1
+shape_meta:
+  obs:
+    rgb:
+      shape:
+      - 3
+      - 96
+      - 96
+    state:
+      shape:
+      - 9
+  action:
+    shape:
+    - 7
+_target_: agent.eval.eval_shortcut_img_agent.EvalImgShortCutAgent
+name: square_eval_shortcut_mlp_img_ta4_td20
+logdir: log/robomimic/eval/square_eval_shortcut_mlp_img_ta4_td20/2025-04-26_13-52-00_42
+base_policy_path: log/robomimic/pretrain/square/ShortCut/state_600.pt
+robomimic_env_cfg_path: cfg/robomimic/env_meta/square-img.json
+normalization_path: data/robomimic/square-img/normalization.npz
+seed: 42
+device: cuda:7
+denoising_steps: 20
+denoising_step_list:
+- 1
+- 2
+- 4
+- 8
+- 16
+- 32
+- 64
+n_steps: 300
+render_num: 0
+batch_size: 128
+env:
+  n_envs: 50
+  name: square
+  best_reward_threshold_for_success: 1
+  max_episode_steps: 300
+  save_video: false
+  use_image_obs: true
+  wrappers:
+    robomimic_image:
+      normalization_path: data/robomimic/square-img/normalization.npz
+      low_dim_keys:
+      - robot0_eef_pos
+      - robot0_eef_quat
+      - robot0_gripper_qpos
+      image_keys:
+      - agentview_image
+      shape_meta:
+        obs:
+          rgb:
+            shape:
+            - 3
+            - 96
+            - 96
+          state:
+            shape:
+            - 9
+        action:
+          shape:
+          - 7
+    multi_step:
+      n_obs_steps: 1
+      n_action_steps: 4
+      max_episode_steps: 300
+      reset_within_step: true
+  render: true
+model:
+  _target_: model.flow.shortcutflow.ShortCutFlow
+  network:
+    _target_: model.flow.mlp_shortcut.ShortCutFlowViT
+    backbone:
+      _target_: model.common.vit.VitEncoder
+      obs_shape:
+      - 3
+      - 96
+      - 96
+      num_channel: 3
+      cfg:
+        patch_size: 8
+        depth: 1
+        embed_dim: 128
+        num_heads: 4
+        embed_style: embed2
+        embed_norm: 0
+    action_dim: 7
+    horizon_steps: 4
+    prop_dim: 9
+    img_cond_steps: 1
+    td_emb_dim: 32
+    mlp_dims:
+    - 768
+    - 768
+    - 768
+    cond_mlp_dims:
+    - 64
+    - 32
+    residual_style: true
+    num_img: 1
+    augment: true
+    spatial_emb: 128
+    embed_combination_type: add
+  device: cuda:7
+  horizon_steps: 4
+  action_dim: 7
+  act_min: -1
+  act_max: 1
+  obs_dim: 9
+  max_denoising_steps: 20
+  seed: 42
+  self_consistency_k: 0.25
+  delta: 1.0e-05
+  sample_t_type: uniform

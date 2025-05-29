@@ -1,0 +1,107 @@
+_target_: agent.eval.eval_reflow_img_agent.EvalImgReFlowAgent
+name: can_eval_reflow_mlp_img_ta4_td100
+logdir: ${oc.env:REINFLOW_LOG_DIR}/robomimic/eval/can_eval_reflow_mlp_img_ta4_td100/2025-04-12_17-52-46_42
+base_policy_path: log/robomimic/pretrain/can/ReFlow/state_2000.pt
+robomimic_env_cfg_path: cfg/robomimic/env_meta/can-img.json
+normalization_path: ${oc.env:REINFLOW_DATA_DIR}/robomimic/can-img/normalization.npz
+seed: 42
+device: cuda:1
+env_name: can
+obs_dim: 9
+action_dim: 7
+denoising_steps: 100
+cond_steps: 1
+img_cond_steps: 1
+horizon_steps: 4
+act_steps: 4
+n_steps: 300
+render_num: 0
+batch_size: 128
+env:
+  n_envs: 50
+  name: can
+  best_reward_threshold_for_success: 1
+  max_episode_steps: 300
+  save_video: false
+  use_image_obs: true
+  wrappers:
+    robomimic_image:
+      normalization_path: ${oc.env:REINFLOW_DATA_DIR}/robomimic/can-img/normalization.npz
+      low_dim_keys:
+      - robot0_eef_pos
+      - robot0_eef_quat
+      - robot0_gripper_qpos
+      image_keys:
+      - robot0_eye_in_hand_image
+      shape_meta:
+        obs:
+          rgb:
+            shape:
+            - 3
+            - 96
+            - 96
+          state:
+            shape:
+            - 9
+        action:
+          shape:
+          - 7
+    multi_step:
+      n_obs_steps: 1
+      n_action_steps: 4
+      max_episode_steps: 300
+      reset_within_step: true
+  render: true
+shape_meta:
+  obs:
+    rgb:
+      shape:
+      - 3
+      - 96
+      - 96
+    state:
+      shape:
+      - 9
+  action:
+    shape:
+    - 7
+model:
+  _target_: model.flow.reflow.ReFlow
+  network:
+    _target_: model.flow.mlp_flow.VisionFlowMLP
+    backbone:
+      _target_: model.common.vit.VitEncoder
+      obs_shape:
+      - 3
+      - 96
+      - 96
+      num_channel: 3
+      cfg:
+        patch_size: 8
+        depth: 1
+        embed_dim: 128
+        num_heads: 4
+        embed_style: embed2
+        embed_norm: 0
+    img_cond_steps: 1
+    augment: true
+    spatial_emb: 128
+    time_dim: 32
+    mlp_dims:
+    - 512
+    - 512
+    - 512
+    residual_style: true
+    cond_dim: 9
+    horizon_steps: 4
+    action_dim: 7
+  device: cuda:1
+  horizon_steps: 4
+  action_dim: 7
+  act_min: -1
+  act_max: 1
+  obs_dim: 9
+  max_denoising_steps: 100
+  seed: 42
+  batch_size: 128
+  sample_t_type: uniform
