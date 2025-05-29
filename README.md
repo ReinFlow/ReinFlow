@@ -16,14 +16,13 @@
 </div>
 <!-- mini table of contents: -->
 <p align="center">
-  <a href="#1-installation">Installation</a> |
-  <a href="#2-quick-start-reproduce-our-results">Quick Start</a> |
-  <a href="#3-implementation-details">Implementation Details</a> |
-  <a href="#4-adding-your-own-dataset-or-environment">Add Dataset/Environment</a> <br>
-  <a href="#5-debug-aid-and-known-issues">Debug & Known Issues</a> |
-  <a href="#6-license">License</a> |
-  <a href="#7-citation">Citation</a> |
-  <a href="#8-acknowledgement">Acknowledgement</a>
+  <a href="#rocket-installation">Installation</a> |
+  <a href="#rocket-quick-start-reproduce-our-results">Quick Start</a> |
+  <a href="#rocket-implementation-details">Implementation Details</a> |
+  <a href="#rocket-adding-your-own-dataset-or-environment">Add Dataset/Environment</a> <br>
+  <a href="#rocket-debug-aid-and-known-issues">Debug & Known Issues</a> |
+  <a href="#license">License</a> |
+  <a href="#acknowledgement">Acknowledgement</a>
 </p>
 
 
