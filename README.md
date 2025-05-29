@@ -29,7 +29,7 @@
 ## :star: Comming Soon
 - A comprehensive webpage
 - WandB project
-- Supporting Fine-tuning [Mean Flow] with online RL
+- Supporting Fine-tuning [Mean Flow](https://arxiv.org/abs/2505.13447) with online RL
 
 ## :rocket:  Installation
 Please follow the steps in [installation/reinflow-setup.md](./installation/reinflow-setup.md).
