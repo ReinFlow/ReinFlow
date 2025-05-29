@@ -1,0 +1,105 @@
+######################################################################
+# environment and task
+env_suite: robomimic
+env: lift
+
+# future action forecasts
+action_dim: 7
+horizon_steps: 4
+
+# observation history
+obs_dim: 9  # proprioception only
+cond_steps: 1
+img_cond_steps: 1
+
+# observation shape
+shape_meta:
+  obs:
+    rgb:
+      shape: [3, 96, 96]  # not counting img_cond_steps
+    state:
+      shape: [9]
+  action: 
+    shape: [7]
+###################################################################
+
+defaults:
+  - _self_
+hydra:
+  run:
+    dir: ${logdir}
+_target_: agent.pretrain.train_reflow_agent.TrainReFlowAgent
+name: ${env}_pre_reflow_mlp_img_ta${horizon_steps}_td${denoising_steps}
+logdir: ${oc.env:REINFLOW_LOG_DIR}/robomimic/pretrain/${env}/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
+train_dataset_path: ${oc.env:REINFLOW_DATA_DIR}/robomimic/${env}-img/train.npz
+
+# 
+denoising_steps: 100
+batch_size: 256
+seed: 42
+device: cuda:3
+
+wandb:
+  entity: ${oc.env:REINFLOW_WANDB_ENTITY}
+  project: robomimic-${env}-pretrain
+  run: ${now:%Y-%m-%d}_${now:%H-%M-%S}_${name}
+  offline_mode: false
+
+train:
+  n_epochs: 2000
+  batch_size: ${batch_size}
+  learning_rate: 1e-4
+  weight_decay: 1e-6
+  lr_scheduler:
+    first_cycle_steps: 2000
+    warmup_steps: 100
+    min_lr: 1e-5
+  epoch_start_ema: 20
+  update_ema_freq: 10
+  save_model_freq: 500
+  log_freq: 100
+
+model:
+  _target_: model.flow.reflow.ReFlow
+  network:
+    _target_: model.flow.mlp_flow.VisionFlowMLP
+    backbone:
+      _target_: model.common.vit.VitEncoder
+      obs_shape: ${shape_meta.obs.rgb.shape}
+      num_channel: ${eval:'${shape_meta.obs.rgb.shape[0]} * ${img_cond_steps}'} # each image patch is history concatenated
+      cfg:
+        patch_size: 8
+        depth: 1
+        embed_dim: 128
+        num_heads: 4
+        embed_style: embed2
+        embed_norm: 0
+    img_cond_steps: ${img_cond_steps}
+    augment: true
+    spatial_emb: 128
+    time_dim: 32
+    mlp_dims: [512, 512, 512]
+    residual_style: true
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+    horizon_steps: ${horizon_steps}
+    action_dim: ${action_dim}
+  device: ${device}
+  horizon_steps: ${horizon_steps}
+  action_dim: ${action_dim}
+  act_min: -1
+  act_max: 1 
+  obs_dim: ${obs_dim}
+  max_denoising_steps: ${denoising_steps}
+  seed: ${seed}
+  sample_t_type: uniform # beta, logitnormal
+ema:
+  decay: 0.995
+train_dataset:
+  _target_: agent.dataset.sequence.StitchedSequenceDataset
+  use_img: true
+  dataset_path: ${train_dataset_path}
+  horizon_steps: ${horizon_steps}
+  max_n_episodes: 100
+  cond_steps: ${cond_steps}
+  img_cond_steps: ${img_cond_steps}
+  device: ${device}

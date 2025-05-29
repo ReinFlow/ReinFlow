@@ -1,0 +1,35 @@
+name: "Finetune_Data_Scale_v.s._Reward_square"
+
+model:
+  name: "ShortCutFlow"
+  pretrain_step: none
+
+plot:
+  labels: ["16", "32", "64", "100"]
+  colors: ["#E6CCFF", "#9929FF", "#6E00D6", "#400080"]
+  add_denoise_step_line: false
+  save_file_name: "square_datascale_finetune.png"
+  plot_scale: "semilogx"
+  denoising_steps: [1,2,4,8,16,32,64,128]
+env:
+  name: "square"
+  square:
+    eval_paths:
+      pretrained:
+        - "visualize/0_Models/ShortCutFlow/square/25-04-27-13-36-00/eval_statistics.npz"  # 16
+        - "visualize/0_Models/ShortCutFlow/square/25-04-27-13-36-02/eval_statistics.npz"  # 32
+        - "visualize/0_Models/ShortCutFlow/square/25-04-27-13-35-59/eval_statistics.npz"  # 64
+        - "visualize/0_Models/ShortCutFlow/square/25-04-26-23-59-51/eval_statistics.npz"  # 100
+      ######################################################################################
+      # finetuned:
+      #   # - "visualize/0_Models/ShortCutFlow/square/datascale_finetuned/16/seed42/25-05-09-18-58-18/eval_statistics.npz"    # 16
+      #   # - "visualize/0_Models/ShortCutFlow/square/datascale_finetuned/16/seed42/25-05-09-18-58-18/eval_statistics.npz"    # 16
+      #   # - "visualize/0_Models/ShortCutFlow/square/datascale_finetuned/16/seed42/25-05-09-18-58-18/eval_statistics.npz"    # 16
+      #   - "visualize/0_Models/ShortCutFlow/square/datascale_finetuned/32/seed42/25-05-09-16-32-17/eval_statistics.npz"    # 32
+      #   - "visualize/0_Models/ShortCutFlow/square/datascale_finetuned/32/seed0/25-05-13-19-42-39/eval_statistics.npz "    # 32
+      #   - "visualize/0_Models/ShortCutFlow/square/datascale_finetuned/32/seed3407/25-05-13-19-42-12/eval_statistics.npz " # 32
+      #   - "visualize/0_Models/ShortCutFlow/square/datascale_finetuned/64/seed42/25-05-09-16-31-54/eval_statistics.npz"    # 64
+      #   - "visualize/0_Models/ShortCutFlow/square/datascale_finetuned/64/seed0/25-05-13-19-40-05/eval_statistics.npz"     # 64
+      #   - "visualize/0_Models/ShortCutFlow/square/datascale_finetuned/64/seed3407/25-05-13-19-41-18/eval_statistics.npz"  # 64
+      #   - "visualize/0_Models/ShortCutFlow/square/datascale_finetuned/100/seed42/25-05-09-17-41-14/eval_statistics.npz"  # 100
+      ######################################################################################

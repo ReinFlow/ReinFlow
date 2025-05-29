@@ -1,0 +1,137 @@
+
+
+evaluation_name: 'SuccessRate' #'AverageEpisodeReward' #'TaskCompletionRate'
+plot_x_axis: sample
+environment_name: "kitchen"  #"gym-state"   #"kitchen" #"robomimic-img"
+task_name: "kitchen-partial-v0-sigma_s_t" #"hopper"   #"kitchen-complete-v0" #"kitchen-partial-v0-sigma(s,t)" #"kitchen-partial-v0-denoise_step" #"kitchen-complete-v0" #"square-img-logitbeta" #"transport-img" #"square-logitbeta" #"square"
+env:
+  environment_name: ${environment_name}
+  kitchen:
+    task_name: ${task_name}
+    kitchen-complete-v0:
+      csv_filename: "kitchen_complete_v0_suc_rate.csv"
+      re_expression: 'r''(?:kitchen-complete-v0)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 40
+      n_rollout_steps: 200
+      n_act_steps: 4
+    kitchen-complete-v0-denoise_step:
+      csv_filename: "complete-denoise.csv"
+      re_expression: 'r''(?:kitchen-complete-v0)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 40
+      n_rollout_steps: 200
+      n_act_steps: 4
+    kitchen-partial-v0-denoise_step:
+      csv_filename: "partial-denoise.csv"
+      re_expression: 'r''(?:kitchen-partial-v0)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 40
+      n_rollout_steps: 200
+      n_act_steps: 4
+    kitchen-partial-v0-sigma_s_t:
+      csv_filename: "partial-sigma(s,t).csv"
+      re_expression: 'r''(?:kitchen-partial-v0)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 40
+      n_rollout_steps: 200
+      n_act_steps: 4
+    kitchen-partial-v0:
+      csv_filename: "partial-v0.csv"
+      re_expression: 'r''(?:kitchen-partial-v0)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 40
+      n_rollout_steps: 200
+      n_act_steps: 4
+    kitchen-mixed-v0:
+      csv_filename:  "mixed-v0.csv"
+      re_expression: 'r''(?:kitchen-mixed-v0)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 40
+      n_rollout_steps: 200
+      n_act_steps: 4
+  robomimic-img:
+    task_name: ${task_name}
+    can-img:
+      csv_filename: "can_suc_rate.csv"
+      re_expression: 'r''(?:can_ft)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 50
+      n_rollout_steps: 300
+      n_act_steps: 4
+    square-img:
+      csv_filename: "44.csv" #"square-4-methods.csv"   #"square_suc_rate.csv"
+      re_expression: 'r''(?:square_ft)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 50
+      n_rollout_steps: 400
+      n_act_steps: 4
+    square-img-logitbeta:
+      csv_filename: "square_suc_rate_reflow_logitbeta.csv"
+      re_expression: 'r''(?:square_ft)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 50
+      n_rollout_steps: 400
+      n_act_steps: 4
+    transport-img:
+      csv_filename: "transport_suc_rate.csv"
+      re_expression: 'r''(?:transport_ft)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 50
+      n_rollout_steps: 400
+      n_act_steps: 8
+  gym-state:
+    task_name: ${task_name}
+    hopper:
+      csv_filename: "hopper_reward_4methods.csv" #"hopper_reward_shortcut_correct.csv" #"hopper_reward.csv"
+      re_expression: 'r''(?:hopper-medium-v2)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 40
+      n_rollout_steps: 500
+      n_act_steps: 4
+    hopper-d4rl:
+      csv_filename: "hopper_reward_4methods.csv" #"hopper_reward_shortcut_correct.csv" #"hopper_reward.csv"
+      re_expression: 'r''(?:hopper-medium-v2)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''  # be careful of the ' and '' and how we parse it as regular expression.
+      n_parallel_envs: 40
+      n_rollout_steps: 500
+      n_act_steps: 4
+    walker:
+      csv_filename: "walker_4_methods.csv" #"walker_reward_shortcut_correct.csv" #"walker_reward.csv"
+      re_expression: 'r''(?:walker2d-medium-v2)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''
+      n_parallel_envs: 40
+      n_rollout_steps: 500
+      n_act_steps: 4
+    walker-d4rl:
+      csv_filename: "walker_reward_4methods.csv" #"walker_reward_shortcut_correct.csv" #"walker_reward.csv"
+      re_expression: 'r''(?:walker2d-medium-v2)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''
+      n_parallel_envs: 40
+      n_rollout_steps: 500
+      n_act_steps: 4
+    halfcheetah:
+      csv_filename: "halfcheetah_reward_shortcut_correct.csv" #"halfcheetah_reward.csv"
+      re_expression: 'r''(?:halfcheetah-medium-v2)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''
+      n_parallel_envs: 40
+      n_rollout_steps: 500
+      n_act_steps: 4
+    ant:
+      csv_filename: "ant_4_methods.csv"  #"ant_reward_shortcut_correct.csv" #"ant_reward.csv"
+      re_expression: 'r''(?:ant-medium-expert-v0)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''
+      n_parallel_envs: 40
+      n_rollout_steps: 500
+      n_act_steps: 4
+    ant-d4rl:
+      csv_filename: "ant_reward_4methods.csv"  #"ant_reward_shortcut_correct.csv" #"ant_reward.csv"
+      re_expression: 'r''(?:ant-medium-expert-v2)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''
+      n_parallel_envs: 40
+      n_rollout_steps: 500
+      n_act_steps: 4
+    humanoid:
+      csv_filename: "humanoid_4_methods.csv"  #"humanoid_reward_shortcut_betalogit.csv" # "humanoid_reward.csv"
+      re_expression: 'r''(?:Humanoid-medium-v3)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''
+      n_parallel_envs: 40
+      n_rollout_steps: 500
+      n_act_steps: 4
+    humanoid-d4rl:
+      csv_filename: "humanoid_4_methods.csv"  #"humanoid_reward_shortcut_betalogit.csv" # "humanoid_reward.csv"
+      re_expression: 'r''(?:Humanoid-medium-v3)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''
+      n_parallel_envs: 40
+      n_rollout_steps: 500
+      n_act_steps: 4
+    humanoid-regularize-compare:
+      csv_filename: "humanoid-regularize.csv"  #"humanoid_reward_shortcut_betalogit.csv" # "humanoid_reward.csv"
+      re_expression: 'r''(?:Humanoid-medium-v3)_(.*?)(?:_seed(\d+)|_(\d+)|-(\d+))(?: - .*)?$'''
+      n_parallel_envs: 40
+      n_rollout_steps: 500
+      n_act_steps: 4
+      
+output_dir: 'visualize/Final_experiments/outs/'
+output_filename: ${environment_name}_${task_name}_${evaluation_name}

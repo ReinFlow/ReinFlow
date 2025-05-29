@@ -1,0 +1,154 @@
+######################################################################
+env_name: hopper-medium-v2
+
+# future action forecasts
+action_dim: 3
+horizon_steps: 4
+act_steps: 4
+
+# observation history
+obs_dim: 11
+cond_steps: 1
+###################################################################
+
+
+defaults:
+  - _self_
+hydra:
+  run:
+    dir: ${logdir}
+_target_: agent.finetune.flow_baselines.train_awr_flow_agent.TrainAWRFlowAgent
+
+name: ${env_name}_awr_reflow_mlp_ta${horizon_steps}_td${denoising_steps}
+logdir: ${oc.env:REINFLOW_LOG_DIR}/gym/finetune/${env_name}_awr_reflow_mlp_ta${horizon_steps}_td${denoising_steps}_tdf${ft_denoising_steps}/${now:%Y-%m-%d}_${now:%H-%M-%S}_seed${seed}
+base_policy_path: ${oc.env:REINFLOW_LOG_DIR}/gym/pretrain/hopper-v2/ReFlow/2025-02-06_01-35-03_42/checkpoint/state_1500.pt
+normalization_path: ${oc.env:REINFLOW_DATA_DIR}/gym/${env_name}/normalization.npz
+
+seed: 42
+device: cuda:0
+denoising_steps: 4   # not 20 as in diffusion.
+ft_denoising_steps: 4   # not 20 as in diffusion.
+env:
+  n_envs: 40
+  name: ${env_name}
+  max_episode_steps: 1000
+  reset_at_iteration: false
+  save_video: false
+  best_reward_threshold_for_success: 3
+  wrappers:
+    mujoco_locomotion_lowdim:
+      normalization_path: ${normalization_path}
+    multi_step:
+      n_obs_steps: ${cond_steps}
+      n_action_steps: ${act_steps}
+      max_episode_steps: ${env.max_episode_steps}
+      reset_within_step: true
+wandb:
+  entity: ${oc.env:REINFLOW_WANDB_ENTITY}
+  project: gym-${env_name}-finetune
+  run: ${now:%Y-%m-%d}_${now:%H-%M-%S}_${name}
+  offline_mode: false
+train:   # temporarily keep the same as in awrdiffusion
+  n_train_itr: 1000
+  n_critic_warmup_itr: 0
+  n_steps: 500
+  gamma: 0.99
+
+  # diffusion awr version:
+  # actor_lr: 1e-4
+  # actor_weight_decay: 0
+  # actor_lr_scheduler:
+  #   first_cycle_steps: 1000
+  #   warmup_steps: 10
+  #   min_lr: 1e-4
+  # critic_lr: 1e-3
+  # critic_weight_decay: 0
+  # critic_lr_scheduler:
+  #   first_cycle_steps: 1000
+  #   warmup_steps: 10
+  #   min_lr: 1e-3
+
+
+
+  # reflow pretrain version
+  actor_lr: 1e-3
+  actor_weight_decay: 1e-6
+  actor_lr_scheduler:
+    first_cycle_steps: 3000
+    warmup_steps: 10
+    min_lr: 1e-4
+
+  critic_lr: 1e-3
+  critic_weight_decay: 1e-6
+  critic_lr_scheduler:
+    type: cosine
+    first_cycle_steps: 3000
+    warmup_steps: 10
+    min_lr: 1e-4
+  
+  # reflow ppo version
+  # actor_lr: 4.5e-05
+  # actor_weight_decay: 0
+  # actor_lr_scheduler:
+  #   type: cosine
+  #   first_cycle_steps: 100
+  #   warmup_steps: 10
+  #   min_lr: 2.0e-05
+  # critic_lr: 0.00065
+  # critic_weight_decay: 1.0e-05
+  # critic_lr_scheduler:
+  #   type: cosine
+  #   first_cycle_steps: 100
+  #   warmup_steps: 10
+  #   min_lr: 0.0003
+
+  save_model_freq: 100
+  val_freq: 10
+  render:
+    freq: 1
+    num: 0
+  # AWR specific
+  scale_reward_factor: 0.01
+  max_adv_weight: 100
+  beta: 10
+  buffer_size: 5000
+  batch_size: 1000
+  replay_ratio: 64
+  critic_update_ratio: 4
+
+model:
+  _target_: model.flow.ft_baselines.flow_awr.AWRFlow
+  #
+  network_path: ${base_policy_path}
+  actor:
+    _target_: model.flow.reflow.ReFlow
+    network:
+      _target_: model.flow.mlp_flow.FlowMLP
+      horizon_steps: ${horizon_steps}
+      action_dim: ${action_dim}
+      cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+      time_dim: 16
+      mlp_dims: [512, 512, 512]
+      activation_type: ReLU
+      out_activation_type: Identity
+      use_layernorm: false
+      residual_style: true
+    device: ${device}
+    horizon_steps: ${horizon_steps}
+    action_dim: ${action_dim}
+    act_min: -1
+    act_max: 1 
+    obs_dim: ${obs_dim}
+    max_denoising_steps: ${denoising_steps}
+    seed: ${seed}
+    sample_t_type: uniform # beta, logitnormal
+  critic:
+    _target_: model.common.critic.CriticObs
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+    mlp_dims: [256, 256, 256]
+    activation_type: Mish
+    residual_style: true
+  inference_steps: ${denoising_steps}
+  clip_intermediate_actions: false
+  device: ${device}
+

@@ -1,0 +1,28 @@
+model:
+  name: "Denoising Models"
+  pretrain_step: 20
+  compare_name: "DDIM_Flow"
+
+plot:
+  labels: ["1-ReFlow", "DDPM", "DDIM"]
+  colors: ["purple", "orange", "red"]
+  add_denoise_step_line: true
+  save_file_name: "compare.png"
+  plot_scale: "semilogx"
+
+env:
+  name: "walker2d-medium-v2"  # Selects which environment to use: walker2d-medium-v2, can, or square
+  walker:
+    eval_paths:
+      - "visualize/0_Models/ReFlow/walker2d-medium-v2/25-04-16-15-27-42/eval_statistics.npz"
+      - "visualize/0_Models/DiffusionModel/walker2d-medium-v2/25-04-16-15-10-50/eval_statistics.npz"
+      - "visualize/0_Models/DiffusionModel/walker2d-medium-v2/25-04-16-15-11-56/eval_statistics.npz"
+  can:
+    eval_paths:
+      - "visualize/0_Models/ReFlow/can/25-04-16-21-54-53/eval_statistics.npz"
+      - "visualize/0_Models/DiffusionModel/can/25-04-17-11-13-29/eval_statistics.npz"
+  square:
+    eval_paths:
+      - "visualize/0_Models/ReFlow/square/25-04-17-10-04-06/eval_statistics.npz"
+      - "visualize/0_Models/DiffusionModel/square/25-04-17-11-13-30/eval_statistics.npz"
+

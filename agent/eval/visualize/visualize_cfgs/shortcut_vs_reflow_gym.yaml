@@ -1,0 +1,32 @@
+model:
+  name: "ShortCutFlow_vs_1-ReFlow"
+  pretrain_step: none
+  compare_name: "1-ReFlow"
+
+plot:
+  labels: ["1-ReFlow", "ShortCut"]
+  colors: ["#4B0082", "#C71585"]
+  add_denoise_step_line: false
+  save_file_name: "shortcut_vs_reflow_gym.png"
+  plot_scale: "semilogx"
+  denoising_steps: [1, 2, 4, 8, 16, 32, 64, 128, 256]
+
+env:
+  name: "hopper"
+  hopper:
+    eval_paths:
+      - "visualize/0_Models/ReFlow/hopper-medium-v2/25-04-26-14-53-21/eval_statistics.npz"
+      - "visualize/0_Models/ShortCutFlow/hopper-medium-v2/25-04-25-20-09-57/eval_statistics.npz"
+  walker:
+    eval_paths:
+      - "visualize/0_Models/ReFlow/walker2d-medium-v2/25-04-26-15-05-17/eval_statistics.npz"
+      - "visualize/0_Models/ShortCutFlow/walker2d-medium-v2/25-04-25-23-29-01/eval_statistics.npz"
+  halfcheetah:
+    eval_paths:
+      - "visualize/0_Models/ReFlow/halfcheetah-medium-v2/25-04-26-15-06-38/eval_statistics.npz"
+      - "visualize/0_Models/ShortCutFlow/halfcheetah-medium-v2/25-04-25-20-24-39/eval_statistics.npz"
+  ant:
+    eval_paths:
+      - "visualize/0_Models/ReFlow/ant-medium-expert-v0/25-04-26-15-07-11/eval_statistics.npz"
+      - "visualize/0_Models/ShortCutFlow/ant-medium-expert-v0/25-04-25-21-17-51/eval_statistics.npz"
+

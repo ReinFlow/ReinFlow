@@ -1,0 +1,75 @@
+######################################################################
+env_suite: gym
+env: kitchen-complete-v0
+
+# future action forecasts
+action_dim: 9
+horizon_steps: 4
+
+# observation history
+obs_dim: 60
+cond_steps: 1
+###################################################################
+defaults:
+  - _self_
+hydra:
+  run:
+    dir: ${logdir}
+_target_: agent.pretrain.train_reflow_agent.TrainReFlowAgent
+name: ${env}_pre_reflow_mlp_ta${horizon_steps}_td${denoising_steps}_seed${seed}
+logdir: ${oc.env:REINFLOW_LOG_DIR}/gym/pretrain/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
+train_dataset_path: ${oc.env:REINFLOW_DATA_DIR}/gym/${env}/train.npz
+
+seed: 42
+device: cuda:7
+denoising_steps: 20
+batch_size: 128
+test_in_mujoco: True
+train:
+  n_epochs: 3000
+  batch_size: ${batch_size}
+  learning_rate: 1e-3
+  weight_decay: 1e-6
+  lr_scheduler:
+    first_cycle_steps: 3000
+    warmup_steps: 1
+    min_lr: 1e-4
+  save_model_freq: 500
+  test_freq: 100
+  log_freq: 10
+wandb:
+  entity: ${oc.env:REINFLOW_WANDB_ENTITY}
+  project: gym-${env}-pretrain
+  run: ${now:%H-%M-%S}_${name}
+model:
+  _target_: model.flow.reflow.ReFlow
+  network:
+    _target_: model.flow.mlp_flow.FlowMLP
+    horizon_steps: ${horizon_steps}
+    action_dim: ${action_dim}
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+    time_dim: 16
+    mlp_dims: [256, 256, 256]
+    cond_mlp_dims: [128, 32]
+    activation_type: Mish  # align with diffusion MLP
+    out_activation_type: Identity
+    use_layernorm: False
+    residual_style: True
+  device: ${device}
+  horizon_steps: ${horizon_steps}
+  action_dim: ${action_dim}
+  act_min: -1
+  act_max: 1 
+  obs_dim: ${obs_dim}
+  max_denoising_steps: ${denoising_steps}
+  seed: ${seed}
+  sample_t_type: uniform # beta, logitnormal
+ema:
+  decay: 0.995
+train_dataset:
+  _target_: agent.dataset.sequence.StitchedSequenceDataset
+  dataset_path: ${train_dataset_path}
+  horizon_steps: ${horizon_steps}
+  cond_steps: ${cond_steps}
+  device: ${device}
+  max_n_episodes: -1

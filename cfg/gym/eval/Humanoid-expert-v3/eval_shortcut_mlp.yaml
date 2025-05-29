@@ -1,0 +1,78 @@
+################################################
+env_name: Humanoid-medium-v3
+obs_dim: 376
+action_dim: 17
+cond_steps: 1
+horizon_steps: 4
+act_steps: 4
+################################################
+
+defaults:
+  - _self_
+hydra:
+  run:  
+    dir: ${logdir}
+_target_: agent.eval.eval_shortcut_agent.EvalShortCutAgent
+
+name: ${env_name}_eval_shortcut_mlp_ta${horizon_steps}_td${denoising_steps}
+logdir: ${oc.env:REINFLOW_LOG_DIR}/gym/eval/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
+base_policy_path: 
+normalization_path: ${oc.env:REINFLOW_DATA_DIR}/gym/${env_name}/normalization.npz
+
+seed: 42
+device: cuda:2
+
+
+load_ema: True
+
+denoising_steps: 4 #20
+denoising_step_list: [4] #20
+
+
+n_steps: 500  # each episode can take maximum (max_episode_steps / act_steps, =250 right now) steps but may finish earlier in gym. 
+              # We only count episodes finished within n_steps for evaluation.
+render_num: 0 # 0  positive if save_video, otherwise 0. 
+
+env:
+  n_envs: 40
+  name: ${env_name}
+  max_episode_steps: 1000
+  reset_at_iteration: false
+  save_video:  false
+  best_reward_threshold_for_success: 3  # success rate not relevant for gym tasks
+  wrappers:
+    mujoco_locomotion_lowdim:
+      normalization_path: ${normalization_path}
+    multi_step:
+      n_obs_steps: ${cond_steps}
+      n_action_steps: ${act_steps}
+      max_episode_steps: ${env.max_episode_steps}
+      reset_within_step: true
+model:
+  _target_: model.flow.shortcutflow.ShortCutFlow
+  network:
+    _target_: model.flow.mlp_shortcut.ShortCutFlowMLP
+    horizon_steps: ${horizon_steps}
+    action_dim: ${action_dim}
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+    td_emb_dim: 16
+    mlp_dims: [512, 512, 512]
+    cond_mlp_dims: [64, 16]
+    activation_type: ReLU
+    out_activation_type: Identity
+    use_layernorm: false
+    residual_style: true
+    embed_combination_type: 'add'
+  device: ${device}
+  horizon_steps: ${horizon_steps}
+  action_dim: ${action_dim}
+  act_min: -1
+  act_max: 1 
+  obs_dim: ${obs_dim}
+  max_denoising_steps: ${denoising_steps}
+  seed: ${seed}
+  self_consistency_k: 0.25
+  delta: 1e-5
+  sample_t_type: uniform # beta, logitnormal
+
+

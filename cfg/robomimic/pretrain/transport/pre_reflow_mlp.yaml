@@ -1,0 +1,77 @@
+######################################################################
+# environment and task
+env_suite: robomimic
+env: transport
+
+# future action forecasts
+action_dim: 14
+horizon_steps: 8
+
+# observation history
+obs_dim: 59
+cond_steps: 1
+###################################################################
+
+defaults:
+  - _self_
+hydra:
+  run:
+    dir: ${logdir}
+_target_: agent.pretrain.train_reflow_agent.TrainReFlowAgent
+name: ${env}_pre_reflow_mlp_ta${horizon_steps}_td${denoising_steps}
+logdir: ${oc.env:REINFLOW_LOG_DIR}/robomimic/pretrain/${env}_pre_reflow_mlp_ta${horizon_steps}_td${denoising_steps}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
+train_dataset_path: ${oc.env:REINFLOW_DATA_DIR}/robomimic/${env}/train.npz
+resume_path: null
+denoising_steps: 100
+batch_size: 256
+
+seed: 42
+device: cuda:0
+test_in_mujoco: false
+wandb:
+  entity: ${oc.env:REINFLOW_WANDB_ENTITY}
+  project: robomimic-${env}-pretrain
+  run: ${now:%Y-%m-%d}_${now:%H-%M-%S}_${name}
+  offline_mode: false
+
+train:
+  n_epochs: 50 # 3000
+  batch_size: ${batch_size}
+  learning_rate: 1e-4
+  weight_decay: 1e-6
+  lr_scheduler:
+    first_cycle_steps: 3000
+    warmup_steps: 100
+    min_lr: 1e-5
+  save_model_freq: 10 #500
+
+model:
+  _target_: model.flow.reflow.ReFlow
+  network:
+    _target_: model.flow.mlp_flow.FlowMLP
+    horizon_steps: ${horizon_steps}
+    action_dim: ${action_dim}
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+    time_dim: 32
+    mlp_dims: [1024, 1024, 1024]
+    activation_type: ReLU
+    out_activation_type: Identity
+    use_layernorm: false
+    residual_style: true
+  device: ${device}
+  horizon_steps: ${horizon_steps}
+  action_dim: ${action_dim}
+  act_min: -1
+  act_max: 1 
+  obs_dim: ${obs_dim}
+  max_denoising_steps: ${denoising_steps}
+  seed: ${seed}
+  sample_t_type: uniform # beta, logitnormal
+ema:
+  decay: 0.995
+train_dataset:
+  _target_: agent.dataset.sequence.StitchedSequenceDataset
+  dataset_path: ${train_dataset_path}
+  horizon_steps: ${horizon_steps}
+  cond_steps: ${cond_steps}
+  device: ${device}

@@ -1,0 +1,103 @@
+defaults:
+  - _self_
+hydra:
+  run:  
+    dir: ${logdir}
+_target_: agent.finetune.rl_finetune.finetune_ppo_agent.FinetunePPOAgent
+
+name: ${env_name}_ppo_mlp_ta${horizon_steps}_td_scratch
+logdir: ${oc.env:REINFLOW_LOG_DIR}/gym/finetune/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
+# base_policy_path: 
+normalization_path: ${oc.env:REINFLOW_DATA_DIR}/gym/${env_name}/normalization.npz
+
+
+env:
+  n_envs: 10
+  name: ${env_name}
+  max_episode_steps: 1000
+  reset_at_iteration: false
+  save_video: false
+  best_reward_threshold_for_success: 3
+  wrappers:
+    mujoco_locomotion_lowdim:
+      normalization_path: ${normalization_path}
+    multi_step:
+      n_obs_steps: ${cond_steps}
+      n_action_steps: ${act_steps}
+      max_episode_steps: ${env.max_episode_steps}
+      reset_within_step: true
+
+wandb:
+  entity: ${oc.env:REINFLOW_WANDB_ENTITY}
+  project: gym-${env_name}-scratch #gym-${env_name}-finetune
+  run: ${now:%H-%M-%S}_${name}
+
+
+seed: 42
+device: cuda:3
+env_name: hopper-medium-v2
+obs_dim: 11
+action_dim: 3
+cond_steps: 1
+horizon_steps: 1
+act_steps: 1
+
+train:
+  n_train_itr: 1000
+  n_critic_warmup_itr: 0
+  n_steps: 1_000
+  gamma: 0.99
+  actor_lr: 1e-4
+  actor_weight_decay: 0
+  actor_lr_scheduler:
+    first_cycle_steps: 1000
+    warmup_steps: 10
+    min_lr: 1e-4
+  critic_lr: 5e-3
+  critic_weight_decay: 0
+  critic_lr_scheduler:
+    first_cycle_steps: 1000
+    warmup_steps: 10
+    min_lr: 1e-3
+  save_model_freq: 100
+  val_freq: 10
+  render:
+    freq: 1
+    num: 0
+
+  
+  
+  # PPO specific
+  reward_scale_running: true
+  reward_scale_const: 1.0
+  gae_lambda: 0.95
+  mini_batch_size: 1_000
+  update_epochs: 10
+  value_coef: 0.5 
+  target_kl: 1            # new 
+
+  entropy_coef: 0.01
+  bc_loss_coef: 0.00
+  clip_ploss_coef: 0.1    # new  ratio_clip_range
+  randn_clip_value: 3     # new  action_deviate_clip_range
+
+agent:
+  _target_: model.rl.ppo.PPOAgent
+  actor:
+    _target_: model.common.mlp_gaussian.Gaussian_MLP
+    mlp_dims: [512, 512, 512]
+    activation_type: ReLU
+    residual_style: false
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+    horizon_steps: ${horizon_steps}
+    action_dim: ${action_dim}
+  critic:
+    _target_: model.common.critic.CriticObs
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+    mlp_dims: [256, 256, 256]
+    activation_type: Mish
+    residual_style: true
+
+  horizon_steps: ${horizon_steps}
+  action_dim: ${action_dim}
+  device: ${device}

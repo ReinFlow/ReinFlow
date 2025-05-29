@@ -1,0 +1,189 @@
+################################
+env_suite: robomimic
+env_name: lift
+
+obs_dim: 9
+cond_steps: 1
+img_cond_steps: 1
+
+action_dim: 7
+horizon_steps: 4
+act_steps: 4
+################################
+
+defaults:
+  - _self_
+hydra:
+  run:
+    dir: ${logdir}
+_target_: agent.finetune.reinflow.train_ppo_flow_img_agent.TrainPPOImgFlowAgent
+name: ${env_name}_ft_reflow_mlp_img_ta${horizon_steps}_td${denoising_steps}_tdf${ft_denoising_steps}_seed${seed}
+logdir: ${oc.env:REINFLOW_LOG_DIR}/robomimic/finetune/${env_name}_ft_reflow_mlp_img_ta${horizon_steps}_td${denoising_steps}_tdf${ft_denoising_steps}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
+base_policy_path: ${oc.env:REINFLOW_LOG_DIR}/robomimic/pretrain/lift/ReFlow/state_2000.pt
+robomimic_env_cfg_path: cfg/robomimic/env_meta/${env_name}-img.json
+normalization_path: ${oc.env:REINFLOW_DATA_DIR}/robomimic/${env_name}-img/normalization.npz
+
+seed: 42
+device: cuda:0
+
+#########################
+denoising_steps: 1
+ft_denoising_steps: 1
+min_std: 0.08
+max_std: 0.14
+#########################
+
+env:
+  n_envs: 50
+  name: ${env_name}
+  best_reward_threshold_for_success: 1
+  max_episode_steps: 300
+  save_video: false
+  use_image_obs: true
+  wrappers:
+    robomimic_image:
+      normalization_path: ${normalization_path}
+      low_dim_keys: ['robot0_eef_pos',
+                     'robot0_eef_quat',
+                     'robot0_gripper_qpos']
+      image_keys: ['robot0_eye_in_hand_image']
+      shape_meta: ${shape_meta}
+    multi_step:
+      n_obs_steps: ${cond_steps}
+      n_action_steps: ${act_steps}
+      max_episode_steps: ${env.max_episode_steps}
+      reset_within_step: true
+
+shape_meta:
+  obs:
+    rgb:
+      shape: [3, 96, 96]
+    state:
+      shape: [9]
+  action: 
+    shape: [7]
+
+wandb:
+  entity: ${oc.env:REINFLOW_WANDB_ENTITY}
+  project: robomimic-${env_name}-finetune
+  run: ${now:%Y-%m-%d}_${now:%H-%M-%S}_${name}
+  offline_mode: false
+train:
+  n_train_itr: 81
+  n_critic_warmup_itr: 2
+  n_steps: 300
+  gamma: 0.999
+  augment: true
+  grad_accumulate: 15
+  actor_lr: 2e-5
+  actor_weight_decay: 0
+  actor_lr_scheduler:
+    type: cosine
+    first_cycle_steps: 100
+    warmup_steps: 10
+    min_lr: 1e-5
+  critic_lr: 6.5e-4
+  critic_weight_decay: 0
+  critic_lr_scheduler:
+    type: cosine
+    first_cycle_steps: 100
+    warmup_steps: 10
+    min_lr: 3e-4
+  save_model_freq: 100
+  val_freq: 10
+  render:
+    freq: 1
+    num: 0
+  # PPO specific
+  reward_scale_running: true
+  reward_scale_const: 1.0
+  gae_lambda: 0.95
+  batch_size: 500
+  logprob_batch_size: 500
+  update_epochs: 10
+  vf_coef: 0.5
+  target_kl: 1e-2
+  lr_schedule: fixed
+  repeat_samples: true
+  verbose: false
+  clip_intermediate_actions: true
+  account_for_initial_stochasticity: true
+model:
+  _target_: model.flow.ft_ppo.ppoflow.PPOFlow
+  device: ${device}
+  actor_policy_path: ${base_policy_path}
+  policy:
+    _target_: model.flow.mlp_flow.VisionFlowMLP
+    backbone:
+      _target_: model.common.vit.VitEncoder
+      obs_shape: ${shape_meta.obs.rgb.shape}
+      num_channel: ${eval:'3 * ${img_cond_steps}'} # each image patch is history concatenated
+      img_h: ${shape_meta.obs.rgb.shape[1]}
+      img_w: ${shape_meta.obs.rgb.shape[2]}
+      cfg:
+        patch_size: 8
+        depth: 1
+        embed_dim: 128
+        num_heads: 4
+        embed_style: embed2
+        embed_norm: 0
+    augment: false
+    spatial_emb: 128
+    time_dim: 32
+    mlp_dims: [512, 512, 512]
+    residual_style: true
+    img_cond_steps: ${img_cond_steps}
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+    horizon_steps: ${horizon_steps}
+    action_dim: ${action_dim}
+  critic:
+    _target_: model.common.critic.ViTCritic
+    spatial_emb: 128
+    augment: false
+    backbone:
+      _target_: model.common.vit.VitEncoder
+      obs_shape: ${shape_meta.obs.rgb.shape}
+      num_channel: ${eval:'3 * ${img_cond_steps}'} # each image patch is history concatenated
+      img_h: ${shape_meta.obs.rgb.shape[1]}
+      img_w: ${shape_meta.obs.rgb.shape[2]}
+      cfg:
+        patch_size: 8
+        depth: 1
+        embed_dim: 128
+        num_heads: 4
+        embed_style: embed2
+        embed_norm: 0
+    img_cond_steps: ${img_cond_steps}
+    mlp_dims: [256, 256, 256]
+    activation_type: Mish
+    residual_style: true
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+  act_dim: ${action_dim}
+  horizon_steps: ${horizon_steps}
+  act_min: -1
+  act_max: 1
+  obs_dim: ${obs_dim}
+  cond_steps: ${cond_steps}
+  noise_scheduler_type: learn
+  inference_steps: ${denoising_steps}
+  ft_denoising_steps: ${ft_denoising_steps}
+  randn_clip_value: 3
+  min_sampling_denoising_std: ${min_std}
+  min_logprob_denoising_std: ${min_std}
+  max_logprob_denoising_std: ${max_std}
+  logprob_min: -1.0
+  logprob_max: 1.0
+  ################################################
+  clip_ploss_coef: 0.01                   # same as DPPO
+  clip_ploss_coef_base: 0.001             # changed from 0.01 to 0.001
+  clip_ploss_coef_rate: 3                 # same as DPPO
+  clip_vloss_coef: null
+  denoised_clip_value: 1.0
+  ################################################
+  time_dim_explore: 0
+  learn_explore_time_embedding: false     # needs change ?
+  use_time_independent_noise: true        # needs change ? 
+  noise_hidden_dims: [256,256,256]        # changed from 16 to this
+  logprob_debug_sample: false
+  logprob_debug_recalculate: false
+  explore_net_activation_type: Tanh

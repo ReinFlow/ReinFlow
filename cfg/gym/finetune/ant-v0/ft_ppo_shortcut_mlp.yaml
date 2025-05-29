@@ -1,0 +1,138 @@
+######################################################################
+env_name: ant-medium-expert-v0
+# future action forecasts
+action_dim: 8
+horizon_steps: 4
+act_steps: 4
+# observation history
+obs_dim: 111
+cond_steps: 1
+###################################################################
+defaults:
+  - _self_
+hydra:
+  run:
+    dir: ${logdir}
+_target_: agent.finetune.reinflow.train_ppo_flow_agent.TrainPPOFlowAgent
+name: ${env_name}_ppo_shortcut_mlp_ta${horizon_steps}_td${denoising_steps}
+logdir: ${oc.env:REINFLOW_LOG_DIR}/gym/finetune/${env_name}_ppo_shortcut_mlp_ta${horizon_steps}_td${denoising_steps}_tdf${ft_denoising_steps}/${now:%Y-%m-%d}_${now:%H-%M-%S}_seed${seed}
+base_policy_path: ${oc.env:REINFLOW_LOG_DIR}/gym/pretrain/ant-v0/ShortCut/2025-04-25_08-57-42_42/checkpoint/state_27.pt
+resume_path: null
+normalization_path: ${oc.env:REINFLOW_DATA_DIR}/gym/${env_name}/normalization.npz
+seed: 42
+device: cuda:0
+denoising_steps: 4
+ft_denoising_steps: 4
+min_std: 0.08
+max_std: 0.16
+env:
+  n_envs: 40
+  name: ${env_name}
+  max_episode_steps: 1000
+  reset_at_iteration: false
+  save_video: false
+  best_reward_threshold_for_success: 3
+  wrappers:
+    mujoco_locomotion_lowdim:
+      normalization_path: ${normalization_path}
+    multi_step:
+      n_obs_steps: ${cond_steps}
+      n_action_steps: ${act_steps}
+      max_episode_steps: ${env.max_episode_steps}
+      reset_within_step: true
+wandb:
+  entity: ${oc.env:REINFLOW_WANDB_ENTITY}
+  project: gym-${env_name}-finetune
+  run: ${now:%Y-%m-%d}_${now:%H-%M-%S}_${name}
+  offline_mode: false
+train:
+  n_train_itr: 1000
+  n_critic_warmup_itr: 0
+  n_steps: 500
+  gamma: 0.99
+  actor_lr: 4.5e-05
+  actor_weight_decay: 0
+  actor_lr_scheduler:
+    type: cosine
+    first_cycle_steps: 100
+    warmup_steps: 10
+    min_lr: 2.0e-05
+  critic_lr: 0.00065
+  critic_weight_decay: 1.0e-05
+  critic_lr_scheduler:
+    type: cosine
+    first_cycle_steps: 100
+    warmup_steps: 10
+    min_lr: 0.0003
+  save_model_freq: 300
+  val_freq: 10
+  render:
+    freq: 1
+    num: 0
+  reward_scale_running: true
+  reward_scale_const: 1.0
+  gae_lambda: 0.95
+  batch_size: 50000
+  update_epochs: 5
+  vf_coef: 0.5
+  ent_coef: 0.03
+  target_kl: 1.0
+  lr_schedule: fixed
+  repeat_samples: true
+  verbose: false
+  clip_intermediate_actions: true
+  account_for_initial_stochasticity: true
+  max_noise_hold_ratio: 0.35
+  max_noise_decay_ratio: 0.7
+model:
+  _target_: model.flow.ft_ppo.pposhortcut.PPOShortCut
+  device: ${device}
+  #########################################################
+  policy:
+    _target_: model.flow.mlp_shortcut.ShortCutFlowMLP
+    horizon_steps: ${horizon_steps}
+    action_dim: ${action_dim}
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+    td_emb_dim: 16
+    mlp_dims: [512, 512, 512]
+    cond_mlp_dims: [64, 16]
+    activation_type: ReLU
+    out_activation_type: Identity
+    use_layernorm: false
+    residual_style: true
+    embed_combination_type: 'add'
+  #########################################################
+  critic:
+    _target_: model.common.critic.CriticObs
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+    mlp_dims: [256,256,256]
+    activation_type: Mish
+    residual_style: true
+  actor_policy_path: ${base_policy_path}
+  act_dim: ${action_dim}
+  horizon_steps: ${horizon_steps}
+  act_min: -1
+  act_max: 1
+  obs_dim: ${obs_dim}
+  cond_steps: ${cond_steps}
+  noise_scheduler_type: learn_decay
+  inference_steps: ${denoising_steps}
+  ft_denoising_steps: ${ft_denoising_steps}
+  randn_clip_value: 3
+  min_sampling_denoising_std: ${min_std}
+  min_logprob_denoising_std: ${min_std}
+  max_logprob_denoising_std: ${max_std}
+  logprob_min: -1.0
+  logprob_max: 1.0
+  clip_ploss_coef: 0.01
+  clip_ploss_coef_base: 0.01
+  clip_ploss_coef_rate: 3
+  clip_vloss_coef: null
+  denoised_clip_value: 1.0
+  time_dim_explore: 0
+  learn_explore_time_embedding: false
+  use_time_independent_noise: false
+  noise_hidden_dims: [64,64]
+  logprob_debug_sample: false
+  logprob_debug_recalculate: false
+  explore_net_activation_type: Tanh

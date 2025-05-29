@@ -1,0 +1,141 @@
+######################################################################
+env_name: halfcheetah-medium-v2
+
+# future action forecasts
+action_dim: 6
+horizon_steps: 4
+act_steps: 4
+
+# observation history
+obs_dim: 17
+cond_steps: 1
+###################################################################
+
+defaults:
+  - _self_
+hydra:
+  run:
+    dir: ${logdir}
+_target_: agent.finetune.flow_baselines.train_fql_agent.TrainFQLAgent
+
+name: ${env_name}_fql_mlp_ta${horizon_steps}_td${denoising_steps}
+logdir: ${oc.env:REINFLOW_LOG_DIR}/gym/finetune/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
+###################################################################
+# be careful to ensure that data and its normalization file are matched.
+dataset_dir: ${oc.env:REINFLOW_DIR}/data-offline/gym/${env_name}
+offline_dataset_path: ${dataset_dir}/train.npz
+normalization_path: ${dataset_dir}/normalization.npz
+###################################################################
+only_optimize_bc_flow: false 
+
+seed: 42
+device: cuda:0
+sim_device: cuda:0
+denoising_steps: 4
+batch_size: 256
+env:
+  n_envs: 1
+  name: ${env_name}
+  max_episode_steps: 1000
+  reset_at_iteration: false
+  save_video: false
+  best_reward_threshold_for_success: 3
+  wrappers:
+    mujoco_locomotion_lowdim:
+      normalization_path: ${normalization_path}
+    multi_step:
+      n_obs_steps: ${cond_steps}
+      n_action_steps: ${act_steps}
+      max_episode_steps: ${env.max_episode_steps}
+      reset_within_step: true
+wandb:
+  entity: ${oc.env:REINFLOW_WANDB_ENTITY}
+  project: gym-${env_name}-finetune
+  run: ${now:%Y-%m-%d}_${now:%H-%M-%S}_${name}
+  offline_mode: false
+
+train:
+  n_train_itr: ${eval:'${train.offline_steps}+${train.online_steps}'}       #250000
+  n_steps: 1
+  n_steps_eval: 500         # align with other baselines.
+  gamma: 0.99
+  actor_lr: 1e-4
+  actor_weight_decay: 0
+  actor_lr_scheduler:
+    first_cycle_steps: 1000
+    warmup_steps: 10
+    min_lr: 1e-4
+  critic_lr: 3e-4
+  critic_weight_decay: 0
+  critic_lr_scheduler:
+    first_cycle_steps: 1000
+    warmup_steps: 10
+    min_lr: 3e-4
+  save_model_freq: 50000
+  val_freq: 5000
+  render:
+    freq: 1
+    num: 0
+  log_freq: 200
+  # FQL specific
+  batch_size: ${batch_size}
+  target_ema_rate: 0.005
+  scale_reward_factor: 1
+  buffer_size: 1000000
+  n_eval_episode: 10
+  alpha: 3.0
+  critic_replay_ratio: ${train.batch_size}
+  actor_replay_ratio: ${train.batch_size}
+  actor_update_repeat: 1
+  offline_steps: 200_000 #offline_steps: 97468 #1000 #125000  # batch_size x offline_steps = len(dataloader) x train.n_epochs in pretraining (=50). len(dataloader) is 249517 for pre-training.
+  online_steps:  569936 #125000
+  eval_base_model: true
+model:
+  _target_: model.flow.ft_baselines.fql.FQLModel
+  bc_flow:
+    _target_: model.flow.reflow.ReFlow
+    network:
+      _target_: model.flow.mlp_flow.FlowMLP
+      horizon_steps: ${horizon_steps}
+      action_dim: ${action_dim}
+      cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+      time_dim: 16
+      mlp_dims: [512, 512, 512]
+      activation_type: ReLU
+      out_activation_type: Identity
+      use_layernorm: false
+      residual_style: true
+    device: ${device}
+    horizon_steps: ${horizon_steps}
+    action_dim: ${action_dim}
+    act_min: -1
+    act_max: 1
+    obs_dim: ${obs_dim}
+    max_denoising_steps: ${denoising_steps}
+    seed: ${seed}
+    sample_t_type: 'uniform' # beta, logitnormal
+  actor:
+    _target_: model.flow.ft_baselines.fql.OneStepActor
+    obs_dim: ${obs_dim}
+    cond_steps: ${cond_steps}
+    action_dim: ${action_dim}
+    horizon_steps: ${horizon_steps}
+    hidden_dim: 512
+  critic:
+    _target_: model.common.critic.CriticObsAct
+    mlp_dims: [256,256]
+    activation_type: ReLU
+    use_layernorm: true
+    double_q: true
+    cond_dim: ${eval:'${obs_dim} * ${cond_steps}'}
+    action_dim: ${action_dim}
+    action_steps: ${act_steps}
+  inference_steps: ${denoising_steps}
+  normalize_q_loss: true
+  device: ${device}
+offline_dataset:
+  _target_: agent.dataset.sequence.StitchedSequenceQLearningDataset
+  dataset_path: ${offline_dataset_path}
+  horizon_steps: ${horizon_steps}
+  cond_steps: ${cond_steps}
+  device: ${device}
