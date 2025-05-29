@@ -13,9 +13,6 @@
   <a href="https://drive.google.com/drive/folders/11LZmP5Fi_aBTwZXKC4yPzSuXr2o5OoE9?usp=drive_link" target="_blank">
     <img alt="Checkpoints" src="https://img.shields.io/badge/Download-Checkpoints-blue?style=for-the-badge" />
   </a>
-  <a href="https://arxiv.org/abs/2505.22094" target="_blank">
-    <img alt="arXiv" src="https://img.shields.io/badge/arXiv-2505.22094-b31b1b?style=for-the-badge" />
-  </a>
 </div>
 <!-- mini table of contents: -->
 <p align="center">
@@ -33,7 +30,7 @@
 ## :star: Comming Soon
 - A comprehensive webpage
 - WandB project
-- Supporting Fine-tuning [Mean Flow](https://arxiv.org/abs/2505.13447) with online RL
+- Supporting Fine-tuning [Mean Flow] with online RL
 
 ## :rocket:  Installation
 Please follow the steps in [installation/reinflow-setup.md](./installation/reinflow-setup.md).
@@ -53,9 +50,6 @@ Please refer to [KnownIssues.md](docs/KnownIssues.md) to see how to resolve erro
 
 ## License
 This repository is released under the MIT license. See [LICENSE](LICENSE).
-
-## Citation
-If you find our work inspiring your own ideas, please consider to cite our [arXiv paper](https://arxiv.org/abs/2505.22094). 
 
 ## Acknowledgement
 This repository was developed from multiple open-source projects. Major references include:  
