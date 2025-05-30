@@ -28,9 +28,9 @@
 
 
 ## :star: Comming Soon
-- A comprehensive webpage
-- WandB project
-- Supporting Fine-tuning [Mean Flow](https://arxiv.org/abs/2505.13447) with online RL
+- Add Theory and Algorithms to the webpage with drop-down bars. 
+- Possible open-source the WandB projects via another account. 
+- Support fine-tuning [Mean Flow](https://arxiv.org/abs/2505.13447) with online RL
 
 ## :rocket:  Installation
 Please follow the steps in [installation/reinflow-setup.md](./installation/reinflow-setup.md).
