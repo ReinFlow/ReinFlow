@@ -209,7 +209,7 @@ python script/run.py --config-dir=cfg/robomimic/eval/transport --config-name=eva
   - `load_ema=True` for pre-trained policies; `False` for fine-tuned ones.
   - Can’t set `denoising_step_list`? Add it to your config file.
   - Clear other processes on your machine for accurate timing.
-- **Output:** Saves a `.png` plot and data files for later use. Example: <img src="sample_figs/denoise_step.png" alt="Evaluation Output" width="60%">
+- **Output:** Saves a `.png` plot and data files for later use. Example: <img src="../sample_figs/denoise_step.png" alt="Evaluation Output" width="60%">
 
 
 **Warning** If you trained a flow matching policy with ReinFlow, typically we will clip the denoised actions during fine-tuning. Therefore, we recommend you turn on `self.clip_intermediate_actions=True` in your evaluation script. Otherwise the reward may drop. 
