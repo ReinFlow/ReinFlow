@@ -14,7 +14,7 @@
   <a href="https://github.com/ReinFlow/ReinFlow/tree/release/docs" target="_blank">
     <img alt="Docs" src="https://img.shields.io/badge/Read-Docs-purple?style=for-the-badge" />
   </a>
-  <a href="https://drive.google.com/drive/folders/11LZmP5Fi_aBTwZXKC4yPzSuXr2o5OoE9?usp=drive_link" target="_blank">
+  <a href="https://huggingface.co/datasets/ReinFlow/ReinFlow-data-checkpoints-logs/" target="_blank">
     <img alt="Checkpoints" src="https://img.shields.io/badge/Download-Checkpoints-orange?style=for-the-badge" />
   </a>
 </div>
@@ -33,7 +33,6 @@
 ## :star: Comming Soon
 - Add Theory and Algorithms to the webpage with drop-down bars. 
 - Possible open-source the WandB projects via a corporate account.   (currently is in .csv format)
-- Open-source training data to Hugging Face via a corporate account. (currently is with google drive)
 - Support fine-tuning [Mean Flow](https://arxiv.org/abs/2505.13447) with online RL
 - Replace figs with videos in the drop-down menu of specific tasks in the webpage.
 
