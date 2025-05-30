@@ -9,10 +9,13 @@
 <hr>
 <div align="center">
   <a href="https://reinflow.github.io/" target="_blank">
-    <img alt="Website" src="https://img.shields.io/badge/Visit-Website-007bff?style=for-the-badge" />
+    <img alt="Website" src="https://img.shields.io/badge/Visit-Website-blue?style=for-the-badge" />
+  </a>
+  <a href="https://github.com/ReinFlow/ReinFlow/tree/release/docs" target="_blank">
+    <img alt="Docs" src="https://img.shields.io/badge/Read-Docs-purple?style=for-the-badge" />
   </a>
   <a href="https://drive.google.com/drive/folders/11LZmP5Fi_aBTwZXKC4yPzSuXr2o5OoE9?usp=drive_link" target="_blank">
-    <img alt="Checkpoints" src="https://img.shields.io/badge/Download-Checkpoints-blue?style=for-the-badge" />
+    <img alt="Checkpoints" src="https://img.shields.io/badge/Download-Checkpoints-orange?style=for-the-badge" />
   </a>
 </div>
 <!-- mini table of contents: -->
