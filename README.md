@@ -54,7 +54,8 @@ Please refer to [Custom.md](docs/Custom.md).
 Please refer to [KnownIssues.md](docs/KnownIssues.md) to see how to resolve errors you encounter.
 
 ## License
-This repository is released under the MIT license. See [LICENSE](LICENSE).
+This repository is released under the MIT license. See [LICENSE](LICENSE). 
+If you use our code, we appreciate it if you paste the license at the beginning of the script. 
 
 ## Acknowledgement
 This repository was developed from multiple open-source projects. Major references include:  
