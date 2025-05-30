@@ -32,8 +32,10 @@
 
 ## :star: Comming Soon
 - Add Theory and Algorithms to the webpage with drop-down bars. 
-- Possible open-source the WandB projects via another account. 
+- Possible open-source the WandB projects via a corporate account.   (currently is in .csv format)
+- Open-source training data to Hugging Face via a corporate account. (currently is with google drive)
 - Support fine-tuning [Mean Flow](https://arxiv.org/abs/2505.13447) with online RL
+- Replace figs with videos in the drop-down menu of specific tasks in the webpage.
 
 ## :rocket:  Installation
 Please follow the steps in [installation/reinflow-setup.md](./installation/reinflow-setup.md).
