@@ -1,3 +1,26 @@
+# MIT License
+
+# Copyright (c) 2025 ReinFlow Authors
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
 import os
 import glob
 
@@ -50,18 +73,49 @@ LICENSE_TEXT_FQL = """The MIT License (MIT)
 """
 
 
-LICENSE_TEXT=LICENSE_TEXT_DPPO
+LICENSE_TEXT_REINFLOW="""# MIT License
+
+# Copyright (c) 2025 ReinFlow Authors
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""
+
+
+
+LICENSE_TEXT=LICENSE_TEXT_REINFLOW
 
 # Define the directories to process
 DIRECTORIES = [
-    "env"
-    "script/dataset"
-    "model/rl",
-    "model/gaussian",
-    "model/diffusion",
-    "model/common",
-    "agent/finetune/diffusion_baselines",
-    "agent/finetune/dppo",
+    "agent/eval",
+    "agent/finetune/reinflow",
+    "data_process",
+    "model/flow",
+    "util"
+    # "env"
+    # "script/dataset"
+    # "model/rl",
+    # "model/gaussian",
+    # "model/diffusion",
+    # "model/common",
+    # "agent/finetune/diffusion_baselines",
+    # "agent/finetune/dppo",
 ]
 
 def add_license_to_file(filepath):
@@ -75,10 +129,20 @@ def add_license_to_file(filepath):
             content = file.read()
 
         # Check if the license is already present
-        if "MIT License" in content and "Copyright (c) 2024 Intelligent Robot Motion Lab" in content:
-            print(f"License already present in {filepath}, skipping.")
-            return
-
+        if LICENSE_TEXT==LICENSE_TEXT_DPPO:
+            if "MIT License" in content and "Copyright (c) 2024 Intelligent Robot Motion Lab" in content:
+                print(f"DPPO License already present in {filepath}, skipping.")
+                return
+        elif LICENSE_TEXT==LICENSE_TEXT_FQL:
+            if "MIT License" in content and "Copyright (c) 2025 FQL Authors" in content:
+                print(f"FQL License already present in {filepath}, skipping.")
+                return
+        elif LICENSE_TEXT==LICENSE_TEXT_REINFLOW:
+            if "MIT License" in content and "Copyright (c) 2025 ReinFlow Authors" in content:
+                print(f"REINFLOW License already present in {filepath}, skipping.")
+                return
+            if "Copyright (c)" in content:
+                print(f"Some License already present in {filepath}, skipping.")
         # Write the license followed by the original content
         with open(filepath, 'w', encoding='utf-8') as file:
             file.write(LICENSE_TEXT + "\n" + content)
