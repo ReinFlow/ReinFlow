@@ -306,7 +306,7 @@ def extract_and_plot(evaluation_name,
             sorted_handles_labels = sorted(zip(handles, labels), key=lambda x: desired_order.index(x[1]) if x[1] in desired_order else len(desired_order))
             sorted_handles, sorted_labels = zip(*sorted_handles_labels)
             print(f"Reordered labels={sorted_labels}")
-            # ax.legend(sorted_handles[::-1], sorted_labels[::-1], fontsize=21)
+            ax.legend(sorted_handles[::-1], sorted_labels[::-1], fontsize=21)
         elif task_name=='kitchen-complete-v0-denoise_step':
             print(f"Original handles={handles}, labels={labels}")
             # Explicitly sort handles and labels for desired legend order (bottom to top)
