@@ -6,6 +6,10 @@ It’s split into clear steps: getting datasets, downloading checkpoints, runnin
 
 
 ## 1. Getting and Preparing Datasets for Pre-training
+**Should I read this section?**
+* If you wish to reproduce our pre-training results, or train an offline RL agent such as FQL, please read this section and download the pre-training data first. 
+* If you want to add your own environment, train a model from scratch, and then fine-tune it, this section  is also*  helpful for your understanding of this repository. 
+* If you only want to fine-tune our pre-trained checkpoints with online RL methods, feel free to skip this section. 
 
 ### OpenAI Gym: State-Based Locomotion Datasets
 
@@ -75,10 +79,12 @@ For OpenAI Gym, you’ve got two dataset options: D4RL’s version (our top pick
 ---
 
 ## 2. Downloading Pre-trained Checkpoints
+
 Simply run the fine-tuning scripts and the checkpoints will be automatically downloaded. 
----
+
 
 ## 3. Running the Experiments
+Since we support too many experiments and algorithms, this document will not record all of the possible commands. We will only show some examples and the other settings follow our listed command patterns. 
 
 ### 3.1 Pre-training
 
