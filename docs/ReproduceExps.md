@@ -116,7 +116,7 @@ Here’s how it works for some environments, under varying settings. Feel free t
   # `denoising_steps`: Max steps for distillation; uses powers of 2 below this
   ```
 
-#### Franka Kitchen and Rob温mimic
+#### Franka Kitchen and Robomimic
 
 - Commands are similar to Gym’s, just swap the config paths:
   - Franka Kitchen: `--config-dir=cfg/gym/pretrain/kitchen-mixed-v0`
