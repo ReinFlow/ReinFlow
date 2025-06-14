@@ -35,7 +35,7 @@
     <img src="https://api.star-history.com/svg?repos=ReinFlow/ReinFlow&type=Date" alt="Star History Chart" >
 </div>
 
-## News
+## :loudspeaker: News
 * [2025/06/14] Updated webpage for a detailed explanation to the algorithm design.
 
 ## :rocket:  Installation
