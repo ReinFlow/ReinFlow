@@ -504,12 +504,6 @@ class PPOFlow(nn.Module):
                 a_ω = self.actor_old.sample_action(cond=obs, inference_steps=self.inference_steps, clip_intermediate_actions=True, act_range=[self.act_min, self.act_max],z=z)
                 a_θ = self.actor_ft.policy.sample_action(cond=obs, inference_steps=self.inference_steps, clip_intermediate_actions=True, act_range=[self.act_min, self.act_max],z=z)
                 bc_loss = F.mse_loss(a_ω.detach(), a_θ)
-            elif bc_loss_type=='KL':
-                pretrained_logprobs=oldlogprobs.detach()
-                logratio = newlogprobs - pretrained_logprobs
-                ratio = logratio.exp()
-                approx_kl_withgrad = (ratio - 1.0 - logratio).mean()
-                bc_loss = approx_kl_withgrad
             else:
                 raise NotImplementedError
         return (
