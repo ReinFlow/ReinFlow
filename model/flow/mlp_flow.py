@@ -161,66 +161,6 @@ class FlowMLP(nn.Module):
         if save_chains:
             return x_hat, x_chain
         return x_hat
-        
-    # not stable yet. needs some checking. 
-    def compute_logprobability(self, action: torch.Tensor, cond: dict, num_inference_steps: int) -> torch.Tensor:
-        """
-        Compute the log probability log p_1(action | cond) using the flow model.
-
-        This method integrates the flow ODE backwards from t=1 to t=0 using Euler's method
-        and estimates the divergence with the Hutchinson estimator to compute the likelihood.
-
-        Args:
-            action (Tensor): Shape (B, T_a, D_a), the action to evaluate.
-            cond (dict): Conditioning info, e.g., {'state': Tensor of shape (B, To, Do)}.
-            num_inference_steps (int): Number of discretization steps for ODE integration.
-
-        Returns:
-            Tensor: Log probabilities, shape (B,).
-        
-        Reference: https://github.com/facebookresearch/flow_matching
-        """
-        # Extract dimensions and device
-        B, T_a, D_a = action.shape
-        device = action.device
-        dt = 1.0 / num_inference_steps
-
-        # Initialize state and log-likelihood term
-        x = action.clone().requires_grad_(True)  # Shape: (B, T_a, D_a)
-        g = torch.zeros(B, device=device)       # Shape: (B,)
-
-        # Sample random vector z for Hutchinson estimator (fixed across steps)
-        eps = torch.randn_like(x)  # Shape: (B, T_a, D_a)
-        
-        # Backward integration from t=1 to t=0
-        for k in range(num_inference_steps - 1, -1, -1):
-            t = (k + 1) / num_inference_steps # Scalar time from 1 to dt
-            with torch.set_grad_enabled(True):
-                # Compute the vector field u_t(x)
-                u = self.forward(x, t, cond)  # Shape: (B, T_a, D_a)
-
-                # Compute Hutchinson estimator for divergence
-                # grad_u_z = (\partial_x u)^T z
-                grad_u_z = torch.autograd.grad(
-                    outputs=u,
-                    inputs=x,
-                    grad_outputs=eps,
-                    create_graph=True
-                )[0]  # Shape: (B, T_a, D_a)
-                
-                # Estimate tr(\partial_x u) ≈ z^T (\partial_x u)^T z
-                div_estimator = (grad_u_z * eps).sum(dim=(1, 2))  # Shape: (B,)
-            
-            # Euler step backwards
-            x = x + (-dt) * u.detach()        # Update state
-            g = g + dt * div_estimator.detach()  # Accumulate log-likelihood change
-
-        # Compute log probability of the source distribution (standard normal)
-        log_p0 = -0.5 * torch.sum(x**2, dim=(1, 2)) - (T_a * D_a / 2) * np.log(2 * np.pi)
-        
-        # Final log probability: log p_1(x) = log p_0(f(0)) - \int_0^1 div(u_t) dt
-        log_p1 = log_p0 - g
-        return log_p1
     
     
 class ExploreNoiseNet(nn.Module):
