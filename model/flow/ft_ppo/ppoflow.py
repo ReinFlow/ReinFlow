@@ -220,7 +220,7 @@ class PPOFlow(nn.Module):
             log p(xK|s) = log p(x0) + \sum_{t=0}^{K-1} log p(xt+1|xt, s)
             H(X0:K)     = H(x0|s)     + \sum_{t=0}^{K-1} H(Xt+1|X_t, s)
             entropy rate H(X) = H(X0:K)/(K+1) asymptotically converges to the entropy per symbol when K goes to infinity.
-            we view the actions at each dimension and horizon as conditionally independent on the state s and previous action. 
+            we view the actions at each dimension and horizon as conditionally independent on the state s and previous action. (open-loop execution)
         '''
         logprob = 0.0
         joint_entropy=0.0 
@@ -245,8 +245,9 @@ class PPOFlow(nn.Module):
         
         # transition probabilities
         chains_vel  = torch.zeros_like(chains_prev, device=self.device)         # [batchsize, self.inference_steps, self.horizon_steps x self.action_dim]
-        steps = torch.linspace(0, 1, self.inference_steps).repeat(B, 1).to(self.device)  # [batchsize, self.inference_steps]
+
         dt = 1.0/self.inference_steps
+        steps = torch.linspace(0, 1-dt, self.inference_steps).repeat(B, 1).to(self.device)  # [batchsize, self.inference_steps]. the points sampled by linspace include the left and right boundaries. so we use 1-dt as the right boundary.  
         for i in range(self.inference_steps):
             t       = steps[:,i]
             xt      = x_chain[:,i]                                              # [batchsize, self.horizon_steps , self.action_dim]

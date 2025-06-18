@@ -180,7 +180,6 @@ class PPOShortCut(PPOFlow):
         # transition probabilities
         chains_vel  = torch.zeros_like(chains_prev, device=self.device)         # [batchsize, self.inference_steps, self.horizon_steps x self.act_dim]
         dt = 1.0/self.inference_steps
-        # this is different from 1-ReFlow
         steps = torch.linspace(0, 1-dt, self.inference_steps).repeat(B, 1).to(self.device)  # [batchsize, self.inference_steps]
         for i in range(self.inference_steps):
             t       = steps[:,i]
