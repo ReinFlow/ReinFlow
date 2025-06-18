@@ -30,7 +30,6 @@ unzip ./mujoco-py.zip
 # add link to mujoco
 echo -e '# link to mujoco
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia 
 export PATH="$LD_LIBRARY_PATH:$PATH" ' >> ~/.bashrc
 source ~/.bashrc
