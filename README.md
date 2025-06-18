@@ -29,12 +29,6 @@
   <a href="#acknowledgement">Acknowledgement</a>
 </p>
 
-
-## Star History
-<div style="display: flex; justify-content: center; align-items: center; height: 100vh; width: 100%; margin: 0; padding: 0;">
-    <img src="https://api.star-history.com/svg?repos=ReinFlow/ReinFlow&type=Date" alt="Star History Chart" >
-</div>
-
 ## :loudspeaker: News
 * [2025/06/14] Updated webpage for a detailed explanation to the algorithm design.
 
@@ -70,3 +64,8 @@ This repository was developed from multiple open-source projects. Major referenc
 - [DPPO, Ren et al.](https://github.com/irom-princeton/dppo): DPPO official implementation.  
 
 For more references, please refer to [Acknowledgement.md](docs/Acknowledgement.md).
+
+## Star History
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh; width: 100%; margin: 0; padding: 0;">
+    <img src="https://api.star-history.com/svg?repos=ReinFlow/ReinFlow&type=Date" alt="Star History Chart" >
+</div>
