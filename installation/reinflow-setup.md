@@ -25,7 +25,7 @@ Here we list one possible approach to install mujoco_py.
 # make mujoco directory
 mkdir $HOME/.mujoco
 cd ~/.mujoco 
-# download mujoco210 and mujoco-py from this source or other sources
+# download mujoco210 and mujoco-py from this source, or other places you like
 https://drive.google.com/drive/folders/15fcrWlTCwFxZkxpMPSrcNzCfTxjj8WE4?usp=sharing
 # unzip them to your root directory
 unzip ./mujoco210.zip
