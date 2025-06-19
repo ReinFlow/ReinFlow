@@ -129,15 +129,18 @@ which is often three times slower than using EGL rendering.
 #### [Debug Helper] if you see `raise RuntimeError("CMake must be installed.") RuntimeError: CMake must be installed.`
 This will happen if you are on a linux machine and your cmake, egl_probe are not installed correctly. 
 To resolve this issue, install egl_probe from a correct branch by doing the following:
+```bash
 # install cmake<4.0.0
 pip install cmake==3.31.6
 # download egl_prob from another branch: (ensure internet connection)
 wget https://github.com/mhandb/egl_probe/archive/fix_windows_build.zip
 # install egl_prob from another branch:
 pip install fix_windows_build.zip
+```
 Then re-install your LIBERO or robomimic again, it should be fine.
 
 Refs: 
+
 StanfordVL/egl_probe#3
 
 ARISE-Initiative/robomimic#114
