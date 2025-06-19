@@ -41,6 +41,7 @@ conda activate reinflow
 pip install 'cython<3.0.0' -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # if you don't have root privilege or cannot update the driver (e.g. in a container)
+pip install patchelf
 conda install -c conda-forge glew
 conda install -c conda-forge mesalib
 conda install -c menpo glfw3
@@ -86,6 +87,7 @@ cd <PATH_TO_YOUR_ANACONDA3>/envs/reinflow/bin/../lib/ # 2. then create soft link
 mv libstdc++.so.6 libstdc++.so.6.old
 ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6 libstdc++.so.6
 ```
+
 #### [Debug Helper] If you meet this error: FileNotFoundError: [Errno 2] No such file or directory: 'patchelf'
 ```python
 pip install patchelf
@@ -113,15 +115,39 @@ pip install robomimic==0.3.0
 
 # install robosuite==1.4.1
 sudo apt-get install libegl-dev # to prevent eglQueryString bug.
-pip install robosuite==1.4.1 
+pip install robosuite==1.4.1
 
 python <PATH_TO_YOUR_ANACONDA3>/envs/reinflow/lib/python3.8/site-packages/robosuite/scripts/setup_macros.py # add links
 # then you will see this "copied $HOME/anaconda3/envs/reinflow/lib/python3.8/site-packages/robosuite/macros.py to $HOME/anaconda3/envs/reinflow/lib/python3.8/site-packages/robosuite/macros_private.py"
 ```
 
-#### [Debug Helper] if you see `libEGL warning: failed to open /dev/dri/renderD135: Permission denied'
+#### [Debug Helper] if you see `libEGL warning: failed to open /dev/dri/renderD135: Permission denied `
 If you are in a container and not an administrator, it is okay to see this warning, but it means you can only use osmesa to train robomimic instead of egl, 
 which is often three times slower than using EGL rendering. 
+
+
+#### [Debug Helper] if you see `raise RuntimeError("CMake must be installed.") RuntimeError: CMake must be installed.`
+This will happen if you are on a linux machine and your cmake, egl_probe are not installed correctly. 
+To resolve this issue, install egl_probe from a correct branch by doing the following:
+# install cmake<4.0.0
+pip install cmake==3.31.6
+# download egl_prob from another branch: (ensure internet connection)
+wget https://github.com/mhandb/egl_probe/archive/fix_windows_build.zip
+# install egl_prob from another branch:
+pip install fix_windows_build.zip
+Then re-install your LIBERO or robomimic again, it should be fine.
+
+Refs: 
+StanfordVL/egl_probe#3
+
+ARISE-Initiative/robomimic#114
+
+huggingface/lerobot#105 (comment)
+
+https://blog.csdn.net/qq_45479062/article/details/144035252
+
+https://blog.csdn.net/qq_45943646/article/details/135741019
+
 
 ### 5. Install dependencies for visualization and logging 
 These packages are just for visualization. Feel free to skip them if you are only interested in training. 
