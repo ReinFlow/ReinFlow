@@ -4,8 +4,11 @@ This document records all the steps needed to install packages related to reprod
 
 
 ### 1. Configure pip source, conda source channels, and create environment
-You are free to skip this part if you are satisfied with the speed of python package downloading. Otherwise, if you want to use THU TUNA as the conda source, please refer to Section 1. in [reinflow-setup.md](reinflow-setup.md). Other sources are also acceptable. 
+* Pip and conda sources
+You are free to skip this part if you are satisfied with the speed of python package downloading. 
+Otherwise, if you want to use THU TUNA as the conda source, please refer to Section 1. in [reinflow-setup-verbose.md](reinflow-setup-verbose.md). Other sources are also acceptable. 
 
+* Create environment
 ```bash
 # create environment
 conda create -n reinflow python=3.8 -y
