@@ -139,7 +139,7 @@ Fine-tuning tweaks pre-trained policies with online RL. Check out these examples
 
 - **1-ReFlow Policy in OpenAI Gym with ReinFlow:**
   ```bash
-  python script/run.py --config-dir=cfg/gym/finetune/ant-v2 --config-name=ft_ppo_reflow_mlp_img min_std=0.08 max_noise=0.16 train.ent_coef=0.03 
+  python script/run.py --config-dir=cfg/gym/finetune/ant-v2 --config-name=ft_ppo_reflow_mlp_img min_std=0.08 max_std=0.16 train.ent_coef=0.03 
   ```
 
 - **Visual-Input Shortcut Policy in Robomimic with ReinFlow:**
