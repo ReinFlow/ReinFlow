@@ -77,7 +77,7 @@ echo -e 'CPATH=$CONDA_PREFIX/include' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-#### [Debug Helper] If you meet this error: version `GLIBCXX_3.4.30‘ not found...
+#### [Debug Helper] If you meet this error: version `GLIBCXX_3.4.30' not found...
 ```bash
 # link GLIBCXX_3.4.30. reference: https://blog.csdn.net/L0_L0/article/details/129469593
 strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX # 1. first check if the thing exists: 
@@ -86,7 +86,10 @@ cd <PATH_TO_YOUR_ANACONDA3>/envs/reinflow/bin/../lib/ # 2. then create soft link
 mv libstdc++.so.6 libstdc++.so.6.old
 ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6 libstdc++.so.6
 ```
-
+#### [Debug Helper] If you meet this error: FileNotFoundError: [Errno 2] No such file or directory: 'patchelf'
+```python
+pip install patchelf
+```
 
 ### 3. Setup environment for Franka Kitchen
 ```bash
