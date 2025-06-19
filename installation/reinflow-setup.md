@@ -178,3 +178,12 @@ If you want to obtain the training record of our experiments, consider download 
 
 
 
+### Other problems you may meet
+* cannot find /util
+This mean you have not yet installed the reinflow package. Please return to `7. Install ReinFlow package`. 
+If you meet problems installing this package, or refuse to install it, we also provide a workaround: insert the following code beofre your [script/run.py](/script/run.py): 
+```python
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath( file ))))
+```
