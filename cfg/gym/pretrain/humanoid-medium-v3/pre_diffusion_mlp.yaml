@@ -19,7 +19,7 @@ _target_: agent.pretrain.train_diffusion_agent.TrainDiffusionAgent
 name: ${env}_pre_diffusion_mlp_ta${horizon_steps}_td${denoising_steps}_seed${seed}
 logdir: ${oc.env:REINFLOW_LOG_DIR}/gym/pretrain/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
 train_dataset_path: ${oc.env:REINFLOW_DATA_DIR}/gym/${env}/train.npz
-normalization_path: ${oc.env:REINFLOW_DATA_DIR}/gym/${env}/train.npz
+normalization_path: ${oc.env:REINFLOW_DATA_DIR}/gym/${env}/normalization.npz
 use_d4rl_dataset: True
 test_in_mujoco: True
 seed: 42
