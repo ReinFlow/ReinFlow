@@ -171,7 +171,7 @@ Fine-tuning tweaks pre-trained policies with online RL. Check out these examples
   Don't forget to update the normalization path to your new expert data. A mismatched normalization will make your curves look super wierd! 
   ```bash
   python script/run.py --config-dir=cfg/robomimic/finetune/transport --config-name=ft_ppo_shortcut_mlp \
-  device=cuda:0 egl_device=cuda:1 \
+  device=cuda:0 sim_device=cuda:1 \
   base_policy_path=NEW_PRETRAINED_POLICY.pt \
   normalization_path=PATH_TO_YOUR_NEW_EXPERT_DATA_DIRECTORY/normalization.npz \
   ```
@@ -179,7 +179,7 @@ Fine-tuning tweaks pre-trained policies with online RL. Check out these examples
 - **How to Specify a WandB Name Before Training Starts ? (When Doing Parameter Sweep)**
   ```bash
   # Name your run and log it in the background
-  nohup python script/run.py --config-dir=cfg/gym/finetune/kitchen-complete-v0 --config-name=ft_ppo_shortcut_mlp device=cuda:0 egl_device=cuda:0 denoising_steps=1 ft_denoising_steps=1 seed=3407 \
+  nohup python script/run.py --config-dir=cfg/gym/finetune/kitchen-complete-v0 --config-name=ft_ppo_shortcut_mlp device=cuda:0 sim_device=cuda:0 denoising_steps=1 ft_denoising_steps=1 seed=3407 \
   name=THE_NAME_I_LIKE_seed3407 \
   > ./ft_kitchen_complete_v0_shortcut_denoise_step_1_seed3407.log 2>&1 &
   ```
